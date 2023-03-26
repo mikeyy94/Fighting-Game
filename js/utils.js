@@ -26,51 +26,34 @@ function startGame()
         3000)
 }
 
-function determineWinner
-({
-    player,
-    enemy,
-    timerId
-}) 
+function determineWinner()
 {
     clearTimeout(timerId)
     document.querySelector('#displayText').style.display = 'flex'
-    if
-    (
-        player.health === enemy.health
-    )
-        {
-            document.querySelector('#displayText').innerHTML = 'Draw!'
-        } 
-    else if
-    (
-        player.health > enemy.health
-    )
-        {
-            document.querySelector('#displayText').innerHTML = 'Player 1 Wins!'
-        }
-    else if
-    (
-        player.health < enemy.health
-    )
-        {
-            document.querySelector('#displayText').innerHTML = 'Player 2 Wins!'
-        } 
+    if(player.health === enemy.health)
+    {
+        document.querySelector('#displayText').innerHTML = 'Draw!'
+    } 
+    else if(player.health > enemy.health)
+    {
+        document.querySelector('#displayText').innerHTML = 'Player 1 Wins!'
+    }
+    else if(player.health < enemy.health)
+    {
+        document.querySelector('#displayText').innerHTML = 'Player 2 Wins!'
+    } 
 }
 
 let timer = 90
 let timerId
 function decreaseTimer()
 {
-    if
-    (
-        timer > 0
-    ) 
-        {
-            timerId = setTimeout(decreaseTimer, 1000)
-            timer--
-            document.querySelector('#timer').innerHTML = timer
-        }
+    if (timer > 0) 
+    {
+        timerId = setTimeout(decreaseTimer, 1000)
+        timer--
+        document.querySelector('#timer').innerHTML = timer
+    }
 
     if (timer === 0)
     {
