@@ -44,7 +44,7 @@ function determineWinner
         } 
 }
 
-let timer = 45
+let timer = 90
 let timerId
 function decreaseTimer()
 {

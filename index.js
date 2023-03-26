@@ -98,12 +98,15 @@ const player = new Fighter
             offset:
             {
                 x: 85,
-                y: 50
+                y: 35
             },
             width: 160,
-            height: 50
+            height: 80
         },
-        direction: 1
+        maxJumps: 1,
+        jumpVelocity: -14,
+        runVelocity: 3,
+        damage: 20
 })
 
 const enemy = new Fighter
@@ -179,7 +182,10 @@ const enemy = new Fighter
             width: 160,
             height: 50
         },
-        direction: 1
+        maxJumps: 2,
+        jumpVelocity: -10,
+        runVelocity: 4.2,
+        damage: 7.5
 })
 
 console.log(player)
@@ -227,7 +233,7 @@ function animate()
         keys.d.pressed && player.lastKey === 'd'
     ) 
         {
-            player.velocity.x = 3
+            player.velocity.x = player.runVelocity
             player.switchSprite('run')
         } 
     else if
@@ -235,7 +241,7 @@ function animate()
         keys.a.pressed && player.lastKey === 'a'
     )
         {
-            player.velocity.x = -3
+            player.velocity.x = player.runVelocity * -1
             player.switchSprite('run')
         }
     else
@@ -259,7 +265,7 @@ function animate()
         keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight'
     ) 
         {
-            enemy.velocity.x = 3
+            enemy.velocity.x = enemy.runVelocity
             enemy.switchSprite('run')
         } 
     else if
@@ -267,7 +273,7 @@ function animate()
         keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft'
     )
         {
-            enemy.velocity.x = -3
+            enemy.velocity.x = enemy.runVelocity * -1
             enemy.switchSprite('run')
         }
     else
@@ -297,7 +303,7 @@ function animate()
             player.framesCurrent === 4
     )
         {
-            enemy.takeHit()
+            enemy.takeHit(player.damage)
             player.isAttacking = false
 
             gsap.to('#enemyHealth',
@@ -324,7 +330,7 @@ function animate()
             enemy.framesCurrent === 2
     )
         {
-            player.takeHit()
+            player.takeHit(enemy.damage)
             enemy.isAttacking = false
 
             gsap.to('#playerHealth',
@@ -372,7 +378,7 @@ window.addEventListener('keydown', (event) =>
             case 'w':
                 if (player.jumps > 0)
                 {
-                    player.velocity.y = -12
+                    player.velocity.y = player.jumpVelocity
                     player.jumps -= 1
                 }
                 break
@@ -400,7 +406,7 @@ window.addEventListener('keydown', (event) =>
                 case 'ArrowUp':
                     if (enemy.jumps > 0)
                     {
-                        enemy.velocity.y = -12
+                        enemy.velocity.y = enemy.jumpVelocity
                         enemy.jumps -= 1
                     }
                     break
