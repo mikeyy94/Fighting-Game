@@ -130,9 +130,10 @@ class Fighter extends Sprite
         this.dead = false
         this.jumps = maxJumps
         this.maxJumps = maxJumps
-        this.damage = damage
         this.jumpVelocity = jumpVelocity
         this.runVelocity = runVelocity
+        this.damage = damage
+        this.animation = 'idle'
 
         for (const sprite in this.sprites)
         {
@@ -245,6 +246,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.idle.image
                     this.framesMax = this.sprites.idle.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -254,6 +256,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.run.image
                     this.framesMax = this.sprites.run.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -263,6 +266,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.jump.image
                     this.framesMax = this.sprites.jump.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -272,6 +276,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.fall.image
                     this.framesMax = this.sprites.fall.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -281,6 +286,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.attack1.image
                     this.framesMax = this.sprites.attack1.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -290,6 +296,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.takeHit.image
                     this.framesMax = this.sprites.takeHit.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
 
@@ -299,6 +306,7 @@ class Fighter extends Sprite
                     this.image = this.sprites.death.image
                     this.framesMax = this.sprites.death.framesMax
                     this.framesCurrent = 0
+                    this.animation = sprite
                 }
                 break
         }

@@ -292,15 +292,14 @@ function animate()
     }
 
     // detect for collision & enemy gets hit
-    if
-    (
-        rectangularCollision
-        ({
+    if(
+        rectangularCollision({
             rectangle1: player,
             rectangle2: enemy
-        }) &&
-            player.isAttacking &&
-            player.framesCurrent === 4
+        }) 
+        && player.isAttacking 
+        && player.framesCurrent === 4
+        && player.animation == 'attack1'
     )
         {
             enemy.takeHit(player.damage)
@@ -319,15 +318,14 @@ function animate()
     }
 
     //detect for collision & player gets hit
-    if
-    (
-        rectangularCollision
-        ({
+    if(
+        rectangularCollision ({
             rectangle1: enemy,
             rectangle2: player
-        }) &&
-            enemy.isAttacking &&
-            enemy.framesCurrent === 2
+        }) 
+        && enemy.isAttacking 
+        && enemy.framesCurrent === 2
+        && enemy.animation == 'attack1'
     )
         {
             player.takeHit(enemy.damage)
@@ -338,7 +336,7 @@ function animate()
                 width: player.health + '%'
             })
         }
-        }
+    }
 
      // if enemy misses
      if (enemy.isAttacking && enemy.framesCurrent === 2)
@@ -366,13 +364,11 @@ window.addEventListener('keydown', (event) =>
             case 'd':
                 keys.d.pressed = true
                 player.lastKey = 'd'
-                player.direction = 1
                 break
 
             case 'a':
                 keys.a.pressed = true
                 player.lastKey = 'a'
-                player.direction = -1
                 break
 
             case 'w':
