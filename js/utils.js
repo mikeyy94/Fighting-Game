@@ -12,56 +12,71 @@ function rectangularCollision
     )
 }
 
-startGame()
+let round = 0
+let roundLength = 90
+let playerScore = 0
+let enemyScore = 0
+let timer = 0
+let timerId
 
-function startGame()
+document.querySelector('#timer').innerHTML = roundLength
+
+function startRound()
 {
-    document.querySelector('#displayText').style.display = 'flex'
-    document.querySelector('#displayText').innerHTML = 'Fight!'
+    round++
+    document.querySelector('#roundNumber').innerHTML = "ROUND "+round
 
-    setTimeout (() =>
-        {
-            document.querySelector('#displayText').style.display = 'none'
-        },
-        3000)
+    player.restore()
+    gsap.to('#playerHealth',
+            {
+                width: player.health + '%'
+            })
+
+    enemy.restore()
+    gsap.to('#enemyHealth',
+            {
+                width: enemy.health + '%'
+            })
+
+    timer = roundLength - 1
+    timerId = setInterval(() => {
+        if(timer <= 0)
+            determineWinner();
+        document.querySelector('#timer').innerHTML = timer
+        timer--
+    }, 1000)
+
+    document.querySelector('#displayText').style.display = 'flex'
+    document.querySelector('#displayText').innerHTML = 'FIGHT!'
+
+    setTimeout(() => {
+        document.querySelector('#displayText').style.display = 'none'
+    }, 3000)
 }
+
 
 function determineWinner()
 {
     clearTimeout(timerId)
+
     document.querySelector('#displayText').style.display = 'flex'
+
+    const retryButton = '<a onClick="startRound()" style="font-size: 30px; margin-top: 40px;">NEXT ROUND</a>'
+
     if(player.health === enemy.health)
     {
-        document.querySelector('#displayText').innerHTML = 'Draw!'
+        document.querySelector('#displayText').innerHTML = 'DRAW!' + retryButton
     } 
     else if(player.health > enemy.health)
     {
-        document.querySelector('#displayText').innerHTML = 'Player 1 Wins!'
+        document.querySelector('#displayText').innerHTML = 'PLAYER 1 WINS!' + retryButton
+        playerScore ++
+        document.querySelector('#playerScore').innerHTML = playerScore
     }
     else if(player.health < enemy.health)
     {
-        document.querySelector('#displayText').innerHTML = 'Player 2 Wins!'
+        document.querySelector('#displayText').innerHTML = 'PLAYER 2 WINS!' + retryButton
+        enemyScore ++
+        document.querySelector('#enemyScore').innerHTML = enemyScore
     } 
-}
-
-let timer = 90
-let timerId
-function decreaseTimer()
-{
-    if (timer > 0) 
-    {
-        timerId = setTimeout(decreaseTimer, 1000)
-        timer--
-        document.querySelector('#timer').innerHTML = timer
-    }
-
-    if (timer === 0)
-    {
-        determineWinner
-        ({
-            player,
-            enemy,
-            timerId
-        })
-    }
 }

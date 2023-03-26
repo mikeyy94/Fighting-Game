@@ -37,6 +37,11 @@ const player = new Fighter
         x: 200,
         y: 100
     },
+    startPosition: 
+    {
+        x: 200,
+        y: 100
+    },
     velocity: 
     {
         x: 0,
@@ -106,12 +111,18 @@ const player = new Fighter
         maxJumps: 1,
         jumpVelocity: -14,
         runVelocity: 3,
-        damage: 20
+        damage: 20,
+        framesHold: 15
 })
 
 const enemy = new Fighter
 ({
     position: 
+    {
+        x: canvas.width - 250,
+        y: 100
+    },
+    startPosition: 
     {
         x: canvas.width - 250,
         y: 100
@@ -185,7 +196,8 @@ const enemy = new Fighter
         maxJumps: 2,
         jumpVelocity: -10,
         runVelocity: 4.2,
-        damage: 7.5
+        damage: 10,
+        framesHold: 12
 })
 
 console.log(player)
@@ -210,7 +222,7 @@ const keys =
     }
 }
 
-decreaseTimer()
+startRound();
 
 function animate() 
 {
@@ -228,18 +240,12 @@ function animate()
     enemy.velocity.x = 0
 
     //player movement
-    if
-    (
-        keys.d.pressed && player.lastKey === 'd'
-    ) 
+    if(keys.d.pressed && player.lastKey === 'd') 
         {
             player.velocity.x = player.runVelocity
             player.switchSprite('run')
         } 
-    else if
-    (
-        keys.a.pressed && player.lastKey === 'a'
-    )
+    else if(keys.a.pressed && player.lastKey === 'a')
         {
             player.velocity.x = player.runVelocity * -1
             player.switchSprite('run')
@@ -250,28 +256,22 @@ function animate()
     }
     
     // jumping
-    if (player.velocity.y < 0)
+    if(player.velocity.y < 0)
     {
         player.switchSprite('jump')
     }
-    else if (player.velocity.y > 0)
+    else if(player.velocity.y > 0)
     {
         player.switchSprite('fall')
     }
 
     //enemy movement
-    if
-    (
-        keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight'
-    ) 
+    if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') 
         {
             enemy.velocity.x = enemy.runVelocity
             enemy.switchSprite('run')
         } 
-    else if
-    (
-        keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft'
-    )
+    else if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft')
         {
             enemy.velocity.x = enemy.runVelocity * -1
             enemy.switchSprite('run')
@@ -282,73 +282,87 @@ function animate()
         }
 
     // jumping
-    if (enemy.velocity.y < 0)
+    if(enemy.velocity.y < 0)
     {
         enemy.switchSprite('jump')
     }
-    else if (enemy.velocity.y > 0)
+    else if(enemy.velocity.y > 0)
     {
         enemy.switchSprite('fall')
     }
 
     // detect for collision & enemy gets hit
-    if(
-        rectangularCollision({
+    if(rectangularCollision
+        ({
             rectangle1: player,
             rectangle2: enemy
         }) 
         && player.isAttacking 
         && player.framesCurrent === 4
         && player.animation == 'attack1'
+        && player.hasHit == false
     )
         {
             enemy.takeHit(player.damage)
-            player.isAttacking = false
+            player.hasHit = true
 
             gsap.to('#enemyHealth',
             {
                 width: enemy.health + '%'
             })
         }
+        else  if(player.framesCurrent === 4 && player.isAttacking === true && player.hasHit === false)
+        {
+            player.isAttacking = false
+            player.hasHit = false
+        }
 
-    // if player misses
-    if (player.isAttacking && player.framesCurrent === 4)
-    {
-        player.isAttacking = false
-    }
+        if(player.framesCurrent === player.framesMax - 1)
+        {
+            player.isAttacking = false
+            player.hasHit = false
+        }
 
-    //detect for collision & player gets hit
-    if(
-        rectangularCollision ({
+    // detect for collision & player gets hit
+    if(rectangularCollision
+        ({
             rectangle1: enemy,
             rectangle2: player
         }) 
         && enemy.isAttacking 
         && enemy.framesCurrent === 2
         && enemy.animation == 'attack1'
+        && enemy.hasHit == false
     )
+
+        // ive hit
         {
             player.takeHit(enemy.damage)
-            enemy.isAttacking = false
+            enemy.hasHit = true
 
             gsap.to('#playerHealth',
             {
                 width: player.health + '%'
             })
         }
+
+        // ive missed
+        else  if(enemy.framesCurrent === 4 && enemy.isAttacking === true && enemy.hasHit === false)
+        {
+            enemy.isAttacking = false
+            enemy.hasHit = false
+        }
+
+        // ive hit or missed
+        if(enemy.framesCurrent === enemy.framesMax - 1)
+        {
+            enemy.isAttacking = false
+            enemy.hasHit = false
+        }
     }
 
-     // if enemy misses
-     if (enemy.isAttacking && enemy.framesCurrent === 2)
-     {
-         enemy.isAttacking = false
-     }
-
     // end game based on health
-    if
-    (
-        enemy.health <= 0 || player.health <= 0
-     ) 
+    if(enemy.health <= 0 || player.health <= 0) 
         {
         determineWinner({ player, enemy, timerId })
         }
@@ -357,7 +371,7 @@ animate()
 
 window.addEventListener('keydown', (event) =>
 {
-    if (!player.dead)
+    if(!player.dead)
     {
         switch (event.key) 
         {
@@ -385,7 +399,7 @@ window.addEventListener('keydown', (event) =>
         }
     }
 
-    if (!enemy.dead)
+    if(!enemy.dead)
     {
         switch (event.key)
         {
