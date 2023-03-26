@@ -112,7 +112,8 @@ const player = new Fighter
         jumpVelocity: -14,
         runVelocity: 3,
         damage: 20,
-        framesHold: 15
+        framesHold: 15,
+        ai: false
 })
 
 const enemy = new Fighter
@@ -197,7 +198,9 @@ const enemy = new Fighter
         jumpVelocity: -10,
         runVelocity: 4.2,
         damage: 10,
-        framesHold: 12
+        framesHold: 12,
+        ai: false,
+        direction: -1
 })
 
 console.log(player)
@@ -222,7 +225,7 @@ const keys =
     }
 }
 
-startRound();
+var aiFrame = 0
 
 function animate() 
 {
@@ -239,139 +242,140 @@ function animate()
     player.velocity.x = 0
     enemy.velocity.x = 0
 
-    //player movement
-    if(keys.d.pressed && player.lastKey === 'd') 
+    if(player.ai === false)
+    {
+        //player movement
+        if(keys.d.pressed && player.lastKey === 'd') 
         {
             player.velocity.x = player.runVelocity
             player.switchSprite('run')
         } 
-    else if(keys.a.pressed && player.lastKey === 'a')
+        else if(keys.a.pressed && player.lastKey === 'a')
         {
             player.velocity.x = player.runVelocity * -1
             player.switchSprite('run')
         }
+        else
+        {
+            player.switchSprite('idle')
+        }
+        
+        // jumping
+        if (player.velocity.y < 0)
+        {
+            player.switchSprite('jump')
+        }
+        else if (player.velocity.y > 0)
+        {
+            player.switchSprite('fall')
+        }
+    }
     else
     {
-        player.switchSprite('idle')
-    }
-    
-    // jumping
-    if(player.velocity.y < 0)
-    {
-        player.switchSprite('jump')
-    }
-    else if(player.velocity.y > 0)
-    {
-        player.switchSprite('fall')
+        if(aiFrame % 10)
+            player.ai.pathfind();
     }
 
-    //enemy movement
-    if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') 
+    if(enemy.ai === false)
+    {
+        //enemy movement
+        if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') 
         {
             enemy.velocity.x = enemy.runVelocity
             enemy.switchSprite('run')
         } 
-    else if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft')
+        else if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft')
         {
             enemy.velocity.x = enemy.runVelocity * -1
             enemy.switchSprite('run')
         }
-    else
+        else
         {
             enemy.switchSprite('idle')
         }
 
-    // jumping
-    if(enemy.velocity.y < 0)
-    {
-        enemy.switchSprite('jump')
+        // jumping
+        if (enemy.velocity.y < 0)
+        {
+            enemy.switchSprite('jump')
+        }
+        else if (enemy.velocity.y > 0)
+        {
+            enemy.switchSprite('fall')
+        }
     }
-    else if(enemy.velocity.y > 0)
+    else
     {
-        enemy.switchSprite('fall')
+        if(aiFrame % 10)
+            enemy.ai.pathfind();
     }
 
-    // detect for collision & enemy gets hit
-    if(rectangularCollision
-        ({
-            rectangle1: player,
-            rectangle2: enemy
-        }) 
-        && player.isAttacking 
+    // Ive hit
+    if(
+        rectangularCollision({ rectangle1: player, rectangle2: enemy}) 
+        && player.isAttacking === true
         && player.framesCurrent === 4
         && player.animation == 'attack1'
         && player.hasHit == false
-    )
-        {
-            enemy.takeHit(player.damage)
-            player.hasHit = true
+    ){
+        enemy.takeHit(player.damage);
+        player.hasHit = true;
 
-            gsap.to('#enemyHealth',
-            {
-                width: enemy.health + '%'
-            })
-        }
-        else  if(player.framesCurrent === 4 && player.isAttacking === true && player.hasHit === false)
+        gsap.to('#enemyHealth',
         {
-            player.isAttacking = false
-            player.hasHit = false
-        }
+            width: enemy.health + '%'
+        });
+    }
+    // Ive missed
+    else if(player.framesCurrent === 4 && player.isAttacking === true && player.hasHit === false)
+    {
+        player.isAttacking = false;
+        player.hasHit = false;
+    }
 
-        if(player.framesCurrent === player.framesMax - 1)
-        {
-            player.isAttacking = false
-            player.hasHit = false
-        }
+    // The animation is over
+    if(player.framesCurrent === player.framesMax - 1)
+    {
+        player.isAttacking = false;
+        player.hasHit = false;
+    }
 
-    // detect for collision & player gets hit
-    if(rectangularCollision
-        ({
-            rectangle1: enemy,
-            rectangle2: player
-        }) 
-        && enemy.isAttacking 
+    //detect for collision & player gets hit
+    if(
+        rectangularCollision({ rectangle1: enemy, rectangle2: player }) 
+        && enemy.isAttacking
         && enemy.framesCurrent === 2
         && enemy.animation == 'attack1'
         && enemy.hasHit == false
-    )
+    ){
+        player.takeHit(enemy.damage);
+        enemy.hasHit = true;
 
-        // ive hit
+        gsap.to('#playerHealth',
         {
-            player.takeHit(enemy.damage)
-            enemy.hasHit = true
-
-            gsap.to('#playerHealth',
-            {
-                width: player.health + '%'
-            })
-        }
-
-        // ive missed
-        else  if(enemy.framesCurrent === 4 && enemy.isAttacking === true && enemy.hasHit === false)
-        {
-            enemy.isAttacking = false
-            enemy.hasHit = false
-        }
-
-        // ive hit or missed
-        if(enemy.framesCurrent === enemy.framesMax - 1)
-        {
-            enemy.isAttacking = false
-            enemy.hasHit = false
-        }
+            width: player.health + '%'
+        });
+    }
+    else if(enemy.framesCurrent === 2 && enemy.isAttacking === true && enemy.hasHit === false)
+    {
+        enemy.isAttacking = false;
+        enemy.hasHit = false;
     }
 
-    // end game based on health
-    if(enemy.health <= 0 || player.health <= 0) 
-        {
-        determineWinner({ player, enemy, timerId })
-        }
+    if(enemy.framesCurrent === enemy.framesMax - 1)
+    {
+        enemy.isAttacking = false;
+        enemy.hasHit = false;
+    }
+
+        aiFrame ++
+    }
 
 animate()
 
 window.addEventListener('keydown', (event) =>
 {
-    if(!player.dead)
+    if(!player.dead && player.ai === false)
     {
         switch (event.key) 
         {
@@ -399,7 +403,7 @@ window.addEventListener('keydown', (event) =>
         }
     }
 
-    if(!enemy.dead)
+    if(!player.dead && enemy.ai === false)
     {
         switch (event.key)
         {

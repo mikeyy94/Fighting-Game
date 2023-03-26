@@ -91,7 +91,9 @@ class Fighter extends Sprite
         jumpVelocity = 10,
         runVelocity = 3,
         damage = 20,
-        framesHold = 15
+        framesHold = 15,
+        ai = false,
+        direction = 1
     })
    {
         super
@@ -106,7 +108,9 @@ class Fighter extends Sprite
             jumpVelocity,
             runVelocity,
             damage,
-            framesHold
+            framesHold,
+            ai,
+            direction
         })
 
         this.velocity = velocity
@@ -141,6 +145,9 @@ class Fighter extends Sprite
         this.animation = 'idle'
         this.maxHealth = 100
         this.startPosition = startPosition
+        this.ai = ai
+        this.direction = direction
+        this.dying = false
 
         for (const sprite in this.sprites)
         {
@@ -155,6 +162,7 @@ class Fighter extends Sprite
         this.framesMax = this.sprites.idle.framesMax
         this.framesCurrent = 0
         this.animation = 'idle'
+        this.dying = false
         this.dead = false
         this.health = this.maxHealth
         this.position = this.startPosition
@@ -224,6 +232,8 @@ class Fighter extends Sprite
         if(this.health <= 0)
         {
             this.switchSprite('death')
+            this.velocity.x = 0
+            this.dying = true
             determineWinner()
         }
         else

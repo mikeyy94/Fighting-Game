@@ -21,6 +21,16 @@ let timerId
 
 document.querySelector('#timer').innerHTML = roundLength
 
+function startGame()
+{
+    player.ai = new ai({
+        self: player,
+        enemy: enemy
+    })
+    
+    startRound();
+}
+
 function startRound()
 {
     round++

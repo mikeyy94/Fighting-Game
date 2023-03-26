@@ -105,12 +105,12 @@
             right: 0;
             bottom: 0;
             left: 0;
-            display: none;
+            display: flex;
             text-shadow: 3px 3px #000, 0px 0px 20px #5e0d6e;
             font-size: 50px;
             flex-direction: column;
         ">
-            DRAW!
+        <a onClick="startGame()" style="font-size: 30px;">START GAME</a>
         </div>
         <canvas></canvas>
     </div>
@@ -120,5 +120,6 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="js/utils.js"></script>
     <script src="js/classes.js"></script>
+    <script src="js/ai.js"></script>
     <script src="index.js"></script>
 </body>
