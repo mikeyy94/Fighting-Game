@@ -12,6 +12,20 @@ function rectangularCollision
     )
 }
 
+startGame()
+
+function startGame()
+{
+    document.querySelector('#displayText').style.display = 'flex'
+    document.querySelector('#displayText').innerHTML = 'Fight!'
+
+    setTimeout (() =>
+        {
+            document.querySelector('#displayText').style.display = 'none'
+        },
+        3000)
+}
+
 function determineWinner
 ({
     player,
