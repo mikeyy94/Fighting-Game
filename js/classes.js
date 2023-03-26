@@ -24,22 +24,29 @@ class Sprite
         this.framesElapsed = 0
         this.framesHold = 15
         this.offset = offset
+        this.direction = 1
    } 
 
     draw()
    {
-    c.drawImage
-        (
-            this.image,
-            this.framesCurrent * (this.image.width / this.framesMax),
-            0,
-            this.image.width / this.framesMax,
-            this.image.height,
-            this.position.x - this.offset.x,
-            this.position.y - this.offset.y,
-            (this.image.width / this.framesMax) * this.scale,
-            this.image.height * this.scale
-        )
+    if (this.direction === -1)
+    {
+        c.translate(this.position.x - this.offset.x + this.image.width, this.position.y - this.offset.y)
+        c.scale(-1, 1)
+    }
+        c.drawImage
+            (
+                this.image,
+                this.framesCurrent * (this.image.width / this.framesMax),
+                0,
+                this.image.width / this.framesMax,
+                this.image.height, 
+                this.position.x - this.offset.x,
+                this.position.y - this.offset.y,
+                (this.image.width / this.framesMax) * this.scale,
+                this.image.height * this.scale
+            )
+        c.setTransform(1, 0, 0, 1, 0, 0)
    }
 
    animateFrames()
@@ -85,7 +92,8 @@ class Fighter extends Sprite
             offset: {},
             width: undefined,
             height: undefined
-        }
+        },
+        direction,
     })
    {
         super
@@ -94,7 +102,8 @@ class Fighter extends Sprite
             imageSrc,
             scale,
             framesMax,
-            offset
+            offset,
+            direction,
         })
 
         this.velocity = velocity
@@ -120,6 +129,8 @@ class Fighter extends Sprite
         this.framesHold = 15
         this.sprites = sprites
         this.dead = false
+        this.direction = direction
+        this.jumps = 2
 
         for (const sprite in this.sprites)
         {
@@ -157,6 +168,7 @@ class Fighter extends Sprite
             {
                 this.velocity.y = 0
                 this.position.y = 331
+                this.jumps = 2
             } 
         else 
         {

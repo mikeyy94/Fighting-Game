@@ -102,7 +102,8 @@ const player = new Fighter
             },
             width: 160,
             height: 50
-        }
+        },
+        direction: 1
 })
 
 const enemy = new Fighter
@@ -177,7 +178,8 @@ const enemy = new Fighter
             },
             width: 160,
             height: 50
-        }
+        },
+        direction: 1
 })
 
 console.log(player)
@@ -358,15 +360,21 @@ window.addEventListener('keydown', (event) =>
             case 'd':
                 keys.d.pressed = true
                 player.lastKey = 'd'
+                player.direction = 1
                 break
 
             case 'a':
                 keys.a.pressed = true
                 player.lastKey = 'a'
+                player.direction = -1
                 break
 
             case 'w':
-                player.velocity.y = -12
+                if (player.jumps > 0)
+                {
+                    player.velocity.y = -12
+                    player.jumps -= 1
+                }
                 break
 
             case ' ':
@@ -389,9 +397,13 @@ window.addEventListener('keydown', (event) =>
                 enemy.lastKey = 'ArrowLeft'
                 break
 
-            case 'ArrowUp':
-                enemy.velocity.y = -12
-                break
+                case 'ArrowUp':
+                    if (enemy.jumps > 0)
+                    {
+                        enemy.velocity.y = -12
+                        enemy.jumps -= 1
+                    }
+                    break
 
             case 'Enter':
                 enemy.attack()
