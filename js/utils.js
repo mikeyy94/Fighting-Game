@@ -18,17 +18,31 @@ let playerScore = 0
 let enemyScore = 0
 let timer = 0
 let timerId
+let paused = false
 
 document.querySelector('#timer').innerHTML = roundLength
 
+function toggleAi (self, opponent)
+{
+    if(!self.ai)
+    {
+        self.ai = new ai({
+            self: self,
+            enemy: opponent
+        })
+    }
+    else
+    {
+        self.ai = false
+    }
+
+    document.querySelector('#playerToggle').innerHTML = player.ai === false ? 'HUMAN' : 'AI'
+    document.querySelector('#enemyToggle').innerHTML = enemy.ai === false ? 'HUMAN' : 'AI'
+}
+
 function startGame()
 {
-    player.ai = new ai({
-        self: player,
-        enemy: enemy
-    })
-    
-    startRound();
+    startRound()
 }
 
 function startRound()
@@ -38,15 +52,15 @@ function startRound()
 
     player.restore()
     gsap.to('#playerHealth',
-            {
-                width: player.health + '%'
-            })
+    {
+        width: player.health + '%'
+    })
 
     enemy.restore()
     gsap.to('#enemyHealth',
-            {
-                width: enemy.health + '%'
-            })
+    {
+        width: enemy.health + '%'
+    })
 
     timer = roundLength - 1
     timerId = setInterval(() => {
@@ -62,6 +76,10 @@ function startRound()
     setTimeout(() => {
         document.querySelector('#displayText').style.display = 'none'
     }, 3000)
+
+    setTimeout(() => {
+        paused = false
+    }, 500)
 }
 
 

@@ -107,10 +107,20 @@
             left: 0;
             display: flex;
             text-shadow: 3px 3px #000, 0px 0px 20px #5e0d6e;
-            font-size: 50px;
+            font-size: 20px;
             flex-direction: column;
         ">
-        <a onClick="startGame()" style="font-size: 30px;">START GAME</a>
+           <div style="flex-direction: row; display: flex; justify-content: space-between; width: 80%;">
+                <div>
+                    <p>SAMURAI</p>
+                    <a id="playerToggle" onClick="toggleAi(player, enemy)" style="font-size: 20px; margin-top: 30px;">HUMAN</a>
+                </div>
+                <a onClick="startGame()" style="font-size: 40px;">START GAME</a>
+                <div>
+                    <p>KENJI</p>
+                    <a id="enemyToggle" onClick="toggleAi(enemy, player)" style="font-size: 20px; margin-top: 30px;">HUMAN</a>
+                </div>
+            </div>
         </div>
         <canvas></canvas>
     </div>

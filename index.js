@@ -111,9 +111,10 @@ const player = new Fighter
         maxJumps: 1,
         jumpVelocity: -14,
         runVelocity: 3,
-        damage: 20,
-        framesHold: 15,
-        ai: false
+        damage: 15,
+        framesHold: 12,
+        ai: false,
+        direction: 1
 })
 
 const enemy = new Fighter
@@ -244,13 +245,13 @@ function animate()
 
     if(player.ai === false)
     {
-        //player movement
-        if(keys.d.pressed && player.lastKey === 'd') 
+        // player movement
+        if(keys.d.pressed && player.lastKey === 'd' && player.dying === false) 
         {
             player.velocity.x = player.runVelocity
             player.switchSprite('run')
         } 
-        else if(keys.a.pressed && player.lastKey === 'a')
+        else if(keys.a.pressed && player.lastKey === 'a' && player.dying === false)
         {
             player.velocity.x = player.runVelocity * -1
             player.switchSprite('run')
@@ -261,11 +262,11 @@ function animate()
         }
         
         // jumping
-        if (player.velocity.y < 0)
+        if (player.velocity.y < 0 && player.dying === false)
         {
             player.switchSprite('jump')
         }
-        else if (player.velocity.y > 0)
+        else if (player.velocity.y > 0 && player.dying === false)
         {
             player.switchSprite('fall')
         }
@@ -273,18 +274,21 @@ function animate()
     else
     {
         if(aiFrame % 10)
-            player.ai.pathfind();
+        {
+            player.ai.pathfind()
+            player.ai.animate()
+        }
     }
 
     if(enemy.ai === false)
     {
-        //enemy movement
-        if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') 
+        // enemy movement
+        if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.dying === false) 
         {
             enemy.velocity.x = enemy.runVelocity
             enemy.switchSprite('run')
         } 
-        else if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft')
+        else if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.dying === false)
         {
             enemy.velocity.x = enemy.runVelocity * -1
             enemy.switchSprite('run')
@@ -295,11 +299,11 @@ function animate()
         }
 
         // jumping
-        if (enemy.velocity.y < 0)
+        if (enemy.velocity.y < 0 && enemy.dying === false)
         {
             enemy.switchSprite('jump')
         }
-        else if (enemy.velocity.y > 0)
+        else if (enemy.velocity.y > 0 && enemy.dying === false)
         {
             enemy.switchSprite('fall')
         }
@@ -307,10 +311,13 @@ function animate()
     else
     {
         if(aiFrame % 10)
-            enemy.ai.pathfind();
+        {
+            enemy.ai.pathfind()
+            enemy.ai.animate()
+        }
     }
 
-    // Ive hit
+    // has hit
     if(
         rectangularCollision({ rectangle1: player, rectangle2: enemy}) 
         && player.isAttacking === true
@@ -318,29 +325,30 @@ function animate()
         && player.animation == 'attack1'
         && player.hasHit == false
     ){
-        enemy.takeHit(player.damage);
-        player.hasHit = true;
+        enemy.takeHit(player.damage)
+        player.hasHit = true
 
         gsap.to('#enemyHealth',
         {
             width: enemy.health + '%'
-        });
+        })
     }
-    // Ive missed
+
+    // has missed
     else if(player.framesCurrent === 4 && player.isAttacking === true && player.hasHit === false)
     {
-        player.isAttacking = false;
-        player.hasHit = false;
+        player.isAttacking = false
+        player.hasHit = false
     }
 
-    // The animation is over
+    // the animation is over
     if(player.framesCurrent === player.framesMax - 1)
     {
-        player.isAttacking = false;
-        player.hasHit = false;
+        player.isAttacking = false
+        player.hasHit = false
     }
 
-    //detect for collision & player gets hit
+    // detect for collision & player gets hit
     if(
         rectangularCollision({ rectangle1: enemy, rectangle2: player }) 
         && enemy.isAttacking
@@ -348,8 +356,8 @@ function animate()
         && enemy.animation == 'attack1'
         && enemy.hasHit == false
     ){
-        player.takeHit(enemy.damage);
-        enemy.hasHit = true;
+        player.takeHit(enemy.damage)
+        enemy.hasHit = true
 
         gsap.to('#playerHealth',
         {
@@ -358,14 +366,14 @@ function animate()
     }
     else if(enemy.framesCurrent === 2 && enemy.isAttacking === true && enemy.hasHit === false)
     {
-        enemy.isAttacking = false;
-        enemy.hasHit = false;
+        enemy.isAttacking = false
+        enemy.hasHit = false
     }
 
     if(enemy.framesCurrent === enemy.framesMax - 1)
     {
-        enemy.isAttacking = false;
-        enemy.hasHit = false;
+        enemy.isAttacking = false
+        enemy.hasHit = false
     }
 
         aiFrame ++

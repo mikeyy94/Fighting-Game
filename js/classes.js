@@ -88,7 +88,7 @@ class Fighter extends Sprite
             height: undefined
         },
         maxJumps = 1,
-        jumpVelocity = 10,
+        jumpVelocity = 12,
         runVelocity = 3,
         damage = 20,
         framesHold = 15,
@@ -129,7 +129,7 @@ class Fighter extends Sprite
             height: attackBox.height
         }
         this.colour = colour
-        this.isAttacking
+        this.isAttacking = false
         this.hasHit = false
         this.health = 100
         this.framesCurrent = 0
@@ -148,6 +148,7 @@ class Fighter extends Sprite
         this.ai = ai
         this.direction = direction
         this.dying = false
+        this.lastHit = 0
 
         for (const sprite in this.sprites)
         {
@@ -165,14 +166,16 @@ class Fighter extends Sprite
         this.dying = false
         this.dead = false
         this.health = this.maxHealth
-        this.position = this.startPosition
+        this.jumps = this.maxJumps
+        this.switchSprite('idle')
         this.position = structuredClone(this.startPosition)
    }
 
     update() 
    {
         this.draw()
-        if(!this.dead) this.animateFrames()
+        if(!this.dead)
+            this.animateFrames()
 
         // attack boxes
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x
@@ -186,6 +189,10 @@ class Fighter extends Sprite
         //     this.attackBox.width,
         //     this.attackBox.height
         // )
+
+
+        if(paused === true)
+            return
 
         if(this.position.x + this.velocity.x <= 0)
         {
@@ -227,6 +234,7 @@ class Fighter extends Sprite
 
    takeHit(damage)
    {
+        this.lastHit = Date.now()
         this.health -= damage
 
         if(this.health <= 0)
@@ -242,11 +250,17 @@ class Fighter extends Sprite
 
    switchSprite(sprite)
    {
+
         // overriding all other animations with the death animation
-        if(this.image === this.sprites.death.image)
+        if(
+            this.image === this.sprites.death.image
+        )
         {
-            if(this.framesCurrent === this.sprites.death.framesMax - 1) this.dead = true
-        return
+            if(this.framesCurrent === this.sprites.death.framesMax - 1) 
+            {
+                this.dead = true
+            }
+            return
         }
 
         // overriding all other animations with the attack animation
